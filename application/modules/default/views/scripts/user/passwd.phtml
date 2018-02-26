@@ -1,0 +1,37 @@
+<h2 class="contentTitle">修改密码</h2>
+<div class="pageContent">
+    <form method="post" action="/user/passwd" class="pageForm required-validate" onsubmit="return validateCallback(this, navTabAjaxDone);">
+        <div class="pageFormContent nowrap" layoutH="97">
+            <dl>
+                <dt>原密码：</dt>
+                <dd>
+                    <input name="oldpasswd" type="password" class="required alphanumeric" minlength="6" maxlength="20" />
+                    <span class="info"><//span>
+                </dd>
+            </dl>
+            <dl>
+                <dt>新密码：</dt>
+                <dd>
+                    <input name="password1" type="password"  id="password1" class="required alphanumeric" minlength="6" maxlength="20"  alt="字母、数字、下划线 6-20位" />
+                    <span class="info"></span>
+                </dd>
+            </dl>
+            <dl>
+                <dt>密码确认：</dt>
+                <dd>
+                    <input name="password2" type="password" equalto="#password1" />
+                    <span class="info"></span>
+                </dd>
+            </dl>
+        </div>
+        <div class="formBar">
+            <ul style="float:left">
+                    <!--<li><a class="buttonActive" href="javascript:;"><span>保存</span></a></li>-->
+                <li><div class="buttonActive"><div class="buttonContent"><button type="submit">保存</button></div></div></li>
+                <li>
+                    <div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+                </li>
+            </ul>
+        </div>
+    </form>
+</div>

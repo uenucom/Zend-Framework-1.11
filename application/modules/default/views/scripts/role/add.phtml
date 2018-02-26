@@ -1,0 +1,151 @@
+<h2 class="contentTitle">模板角色</h2>
+<div class="pageContent">
+    <form method="post" action="/role/add" class="pageForm required-validate" onsubmit="return validateCallback(this, navTabAjaxDone);">
+        <div class="pageFormContent nowrap" layoutH="97">
+            <dl>
+                <dt>模板名称：</dt>
+                <dd>
+                    <input name="role_name" type="text" size="30" value="<?php echo $this->roleinfo['role_name']; ?>" class="required alphanumeric" minlength="2" maxlength="10" alt="字母、数字、下划线 2-10位" remote="/role/check"/>
+                    <span class="info"></span>
+                </dd>
+            </dl>
+            <dl>
+                <dt>备注说明：</dt>
+                <dd>
+                    <input type="text" name="role_intro" class="required" size="30" value="<?php echo $this->roleinfo['role_intro']; ?>" />
+                    <span class="info"></span>
+                </dd>
+            </dl>
+            <dl>
+                <dt>有效性：</dt>
+                <dd>
+                    <select name="enable" class="required combox">
+                        <option value="">请选择</option>
+                        <option value="1">有效</option>
+                        <option value="0">无效</option>
+                    </select>
+                    <span class="info"></span>
+                </dd>
+            </dl>
+            <div class="divider" style="border: 0px; margin-bottom: 20px"></div> 
+            <div style="display:none">
+            <fieldset><legend>可继承的角色</legend>
+                <?php if (isset($this->extlist)): ?>
+                    <?php foreach ($this->extlist as $key => $val): ?>
+                        <label><input type="checkbox" name="extlist[]" value="<?php echo $val['role_id']; ?>" /><?php echo $val['role_intro']; ?> (<?php echo $val['role_name']; ?>)</label>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </fieldset>
+            <div class="divider" id="extshow_line" style="border: 0px; margin-bottom: 20px;display:none"></div>  
+            <fieldset id="extshow" style="display:none"><legend>附加内容</legend>
+                <label><input type="radio" name="exttype" value="1" checked="checked"/>增加新权限</label>
+                <label><input type="radio" name="exttype" value="0" />禁用某些权限</label>
+            </fieldset>
+            </div>
+            <div class="divider" style="border: 0px; margin-bottom: 20px"></div>
+            <fieldset><legend>分配权限</legend>
+                <div class="divider" style="border: 0px;"></div>
+                <?php if (isset($this->acllist)): ?>
+                    <?php foreach ($this->acllist as $key => $val): ?>
+                        <!--<fieldset>-->
+                        <label style="color:red"><?php if (trim($val['title']) !== ''): ?><?php echo $val['title']; ?><?php else: ?><?php echo $val['resource']; ?><?php endif; ?><input type="checkbox" name="resource[]" value="<?php echo $val['resource']; ?>" />：</label>
+                        <?php if (isset($val['action'])): ?>
+                            <?php foreach ($val['action'] as $subkey => $subval): ?>
+                                <label><input type="checkbox" name="<?php echo $val['resource']; ?>[]" value="<?php echo $subval['action']; ?>" /><?php
+                                    if (trim($subval['title']) !== ''): echo $subval['title'];
+                                    else: echo $subval['action'];
+                                        ?><?php endif; ?></label>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                        <?php if ($key === (count($this->acllist) - 1)): ?>
+                            <div class="divider" style="border: 0px;"></div>
+                        <?php else: ?>
+                            <div class="divider" style="margin:10px 0px ;"></div>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                <?php endif; ?></fieldset>
+        </div>
+        <div class="formBar">
+            <label style="float:left"><input type="checkbox" name="checkAll" id="checkAll" />全选</label>
+            <ul style="float:left">
+                <li><div class="buttonActive"><div class="buttonContent"><button type="submit" onclick="false">提交</button></div></div></li>
+            </ul>
+        </div>
+    </form>
+    <script>
+        $(document).ready(function() {
+            $('input[type="checkbox"][name="resource[]"]').each(function() {
+                //$(this).attr('disabled',true);
+                var resOur = $(this).val();
+                if ($(this).attr('checked')) {
+                    $('input[type="checkbox"][name="' + resOur + '[]"]').attr('disabled', false);
+                }
+                else {
+                    $('input[type="checkbox"][name="' + resOur + '[]"]').attr('disabled', true);
+                    $('input[type="checkbox"][name="' + resOur + '[]"]').attr('checked', false);
+                }
+            });
+
+            //var action = new Array();
+            $('input[type="checkbox"][name="resource[]"]').click(function() {
+                //var resource = new Array();
+                var pobj = this;
+                var resOur = $(this).val();
+                $('input[type="checkbox"][name="' + resOur + '[]"]').each(function(i) {
+                    var obj = $(this).val();
+                    if ($(pobj).attr('checked')) {
+                        $(this).attr('disabled', false);
+                        $(this).attr('checked', true);//新增
+                    }
+                    else {
+                        $(this).attr('disabled', true);
+                        $(this).attr('checked', false);
+                    }
+                });
+            });
+            //
+            $('input[type="checkbox"][name="extlist[]"]').click(function() {
+                //var resource = new Array();
+                var pobj = this;
+                var cnt = 0;
+                $('input[type="checkbox"][name="extlist[]"]').each(function(i) {
+                    if ($(this).attr('checked')) {
+                        cnt++;
+                    }
+                });
+                if (cnt) {
+                    $("#extshow").get(0).style.display = "block";
+                    $("#extshow_line").get(0).style.display = "block";
+                    //exttype
+                    //$('input[name=exttype]').get(0).checked = true;
+                    //$("input[name=exttype]").attr("checked",true);
+                } else {
+                    $("#extshow").get(0).style.display = "none";
+                    $("#extshow_line").get(0).style.display = "none";
+                    $('input[name=exttype]').get(0).checked = true;
+                   // $("input[name=exttype]").attr("checked",true);
+                }
+            });
+
+           $('#checkAll').click(function() {
+                var nobj = this;
+                $('input[type="checkbox"][name="resource[]"]').each(function() {
+                    var resOur = $(this).val();
+                    if ($(nobj).attr('checked')) {
+                        $(this).attr('checked', true);
+                        $('input[type="checkbox"][name="' + resOur + '[]"]').attr('disabled', false);
+                        $('input[type="checkbox"][name="' + resOur + '[]"]').attr('checked', true);
+                    }
+                    else {
+                        $(this).attr('checked', false);
+                        $('input[type="checkbox"][name="' + resOur + '[]"]').attr('disabled', true);
+                        $('input[type="checkbox"][name="' + resOur + '[]"]').attr('checked', false);
+                    }
+                });
+
+            })
+        });
+
+
+    </script>
+</div>

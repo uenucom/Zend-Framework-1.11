@@ -1,0 +1,235 @@
+<h2 class="contentTitle">批量授权</h2>
+<div class="pageContent">
+    <form method="post" action="/user/batch" class="pageForm required-validate" onsubmit="return validateCallback(this, navTabAjaxDone);">
+        <div class="pageFormContent nowrap" layoutH="97" style="margin-left: 20px">
+            <fieldset>
+                <legend>批量授权</legend>
+                <dl>
+                    <dt style="width: 80px">类型：</dt>
+                    <dd>
+                        <select class="combox" name="dotype">
+                            <option value="add">新增权限</option>
+                            <option value="del">禁用权限</option>
+                            <option value="like">开通与某人相同的权限</option>
+                        </select>
+                        <span class="info"></span>
+                    </dd>
+                </dl>
+                <dl id="subsearch" style="display:none">
+                    <dt style="width: 80px">参考用户：</dt>
+                    <dd>
+                        <input type="hidden" name="userinfo.user_id" readonly="true" value=""/>
+                        <input type="text" style="width:100px"  readonly="true" name="userinfo.user_realname" value="" suggestFields="user_id,user_realname" suggestUrl="/user/subsearch" lookupGroup="userinfo" />
+                        <a class="btnLook0" href="/user/subsearch" lookupGroup="userinfo">选择用户</a>	
+                        <span class="info"></span>
+                    </dd>
+                </dl>
+                <dl class="nowrap">
+                    <dt style="width: 80px">用户列表：</dt>
+                    <dd><textarea name="userlist"  cols="80" rows="5" alt="请输入用户名"></textarea></dd>
+                </dl>
+                <button type="button" id="searchbutton">查询</button>
+                <div class="divider"></div>
+                <dl class="nowrap" id="userlist_html">
+                </dl>
+            </fieldset>
+
+
+            <dl style="display:none">
+                <dt>角色：</dt>
+                <dd>
+                    <input type="text" name="role_name"  id="role_name" size="30" value="" />
+                    <span class="info"></span>
+                </dd>
+            </dl>
+
+            <div class="divider"></div>
+            <div class="divider" style="border: 0px; margin-bottom: 10px"></div>
+            <div layoutH="146" class="showstaus" style="float:left; display:block; overflow:auto; width:240px; border:solid 1px #CCC; line-height:21px; background:#fff">
+                <ul class="tree treeFolder">
+                    <li><a href="javascript">权限模板</a>
+                        <ul>
+                            <?php if (isset($this->rolelist)): ?>
+                                <?php foreach ($this->rolelist as $key => $val): ?>
+                                    <li><a href="/user/role?role_id=<?php echo $val['role_id']; ?>" target="ajax" rel="batchBox"><?php echo $val['role_intro'] . "({$val['role_name']})"; ?></a></li>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </ul>
+                    </li>
+
+                </ul>
+            </div>
+
+            <div id="batchBox" class="unitBox batchBox" style="margin-left:260px;display:block">
+                <fieldset><legend>分配权限</legend>
+                    <div class="divider" style="border: 0px;"></div>
+                    <?php if (isset($this->acllist)): ?>
+                        <?php foreach ($this->acllist as $key => $val): ?>
+                            <!--<fieldset>-->
+                            <label style="color:red"><?php if (trim($val['title']) !== ''): ?><?php echo $val['title']; ?><?php else: ?><?php echo $val['resource']; ?><?php endif; ?><input type="checkbox" name="resource[]" value="<?php echo $val['resource']; ?>" />：</label>
+                            <?php if (isset($val['action'])): ?>
+                                <?php foreach ($val['action'] as $subkey => $subval): ?>
+                                    <label><input type="checkbox" name="<?php echo $val['resource']; ?>[]" value="<?php echo $subval['action']; ?>" /><?php
+                                        if (trim($subval['title']) !== ''): echo $subval['title'];
+                                        else: echo $subval['action'];
+                                            ?><?php endif; ?></label>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                            <?php if ($key === (count($this->acllist) - 1)): ?>
+                                <div class="divider" style="border: 0px;"></div>
+                            <?php else: ?>
+                                <div class="divider" style="margin:10px 0px ;"></div>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    <?php endif; ?></fieldset>
+            </div>
+        </div>
+        <div class="formBar">
+            <?php if ($this->roleinfo['role_name'] !== 'admin'): ?><label style="float:left"><input type="checkbox" name="checkAll" id="checkAll" />全选</label><?php endif; ?>
+            <ul style="float:left">
+                <li><div class="buttonActive"><div class="buttonContent"><button type="submit" onclick="false">保存</button></div></div></li>
+                <li>
+                    <div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+                </li>
+            </ul>
+        </div>
+    </form>
+    <script>
+        $(document).ready(function () {
+            $('input[type="checkbox"][name="resource[]"]').each(function () {
+                var pobj = this;
+                var resOur = $(this).val();
+                var cnt = 0;
+                $('input[type="checkbox"][name="' + resOur + '[]"]').each(function (i) {
+                    if ($(this).attr('checked')) {
+                        cnt = 1;
+                    }
+                });
+                if (cnt) {
+                    $(this).attr('disabled', false);
+                    $(this).attr('checked', true);
+                    $('input[type="checkbox"][name="' + resOur + '[]"]').each(function (i) {
+                        if ($(this).attr('checked')) {
+                            $(this).attr('disabled', false);
+                        }
+                        else {
+                            $(this).attr('disabled', false);
+                            $(this).attr('checked', false);
+                        }
+                    });
+                } else {
+                    $('input[type="checkbox"][name="' + resOur + '[]"]').each(function (i) {
+                        $(this).attr('disabled', true);
+                        $(this).attr('checked', false);
+                    });
+                }
+            });
+
+            $('input[type="checkbox"][name="resource[]"]').click(function () {
+                var pobj = this;
+                var resOur = $(this).val();
+                $('input[type="checkbox"][name="' + resOur + '[]"]').each(function (i) {
+                    var obj = $(this).val();
+                    if ($(pobj).attr('checked')) {
+                        $(this).attr('disabled', false);
+                        $(this).attr('checked', true);//新增
+                    }
+                    else {
+                        $(this).attr('disabled', true);
+                        $(this).attr('checked', false);
+                        $(this).attr('checked', false);
+                    }
+                });
+            });
+
+            //
+            $('input[type="checkbox"][name="extlist[]"]').click(function () {
+                var pobj = this;
+                var cnt = 0;
+                $('input[type="checkbox"][name="extlist[]"]').each(function (i) {
+                    if ($(this).attr('checked')) {
+                        cnt++;
+                    }
+                });
+                if (cnt) {
+                    $("#extshow").get(0).style.display = "block";
+                    $("#extshow_line").get(0).style.display = "block";
+                } else {
+                    $("#extshow").get(0).style.display = "none";
+                    $("#extshow_line").get(0).style.display = "none";
+                    $('input[name=exttype]').get(0).checked = true;
+                }
+            });
+
+            $('#checkAll').click(function () {
+                var nobj = this;
+                $('input[type="checkbox"][name="resource[]"]').each(function () {
+                    var resOur = $(this).val();
+                    if ($(nobj).attr('checked')) {
+                        $(this).attr('checked', true);
+                        $('input[type="checkbox"][name="' + resOur + '[]"]').attr('disabled', false);
+                        $('input[type="checkbox"][name="' + resOur + '[]"]').attr('checked', true);
+                    }
+                    else {
+                        $(this).attr('checked', false);
+                        $('input[type="checkbox"][name="' + resOur + '[]"]').attr('disabled', true);
+                        $('input[type="checkbox"][name="' + resOur + '[]"]').attr('checked', false);
+                    }
+                });
+
+            });
+
+            $('select[name=dotype]').change(function () {
+                var type_val = $('select[name=dotype]').val();
+                if (type_val == 'like') {
+                    $("#subsearch").attr("style", "display:block");
+                    $('input[name="userinfo.user_id"]').val('');
+                    $('input[name="userinfo.user_realname"]').val('');
+                    $('input[name="userinfo.user_realname"]').attr('class', 'required');
+                    $(".showstaus").get(0).style.display = "none";
+                    $(".batchBox").get(0).style.display = "none";
+                    
+                } else {
+                    $("#subsearch").attr("style", "display:none");
+                    $('input[name="userinfo.user_id"]').val('');
+                    $('input[name="userinfo.user_realname"]').val('');
+                    $('input[name="userinfo.user_realname"]').attr('class', '');
+                    $(".showstaus").get(0).style.display = "block";
+                    $(".batchBox").get(0).style.display = "block";
+                }
+            });
+
+            $('#searchbutton').click(function () {
+                var ul = $('textarea[name=userlist]').val();
+                var type = $('select[name=dotype]').val();
+                var uid = $('input[name="userinfo.user_id"]').val();//userinfo.user_id
+                var sobj = {};
+
+                if (type == 'like') {
+                    if (uid > 0) {
+                        sobj.type = type;
+                        sobj.uid = uid;
+                    } else {
+                        alertMsg.info('请选择参考用户');//correct error warn info
+                        return;
+                    }
+                } else {
+                    sobj.type = type;
+                }
+                if (ul.trim() === '') {
+                    alertMsg.info('请填写用户列表');//correct error warn info
+                    return;
+                }
+                sobj.userlist = ul;
+
+                $.post("/user/batchsearch", sobj, function (data) {
+                    var html = '';
+                    for (a = 0; a < data.length; a++) {
+                        html += '<label><input type="checkbox" name="user_id[]" value="' + data[a].user_id + '" />' + data[a].user_realname + '</label>';//userlist_html
+                    }
+                    $("#userlist_html").html(html);
+                }, "json");
+            });
+        });
+    </script>
+</div>

@@ -1,0 +1,46 @@
+<h2 class="contentTitle">权限日志</h2>
+<div class="pageContent">
+    <div class="pageFormContent nowrap" layoutH="97">
+        <dl>
+            <dt style="width: 100px">用户：</dt>
+            <dd>
+                <?php echo $this->loglinfo['username']; ?>
+            </dd>
+        </dl>
+        <dl>
+            <dt style="width: 100px">时间：</dt>
+            <dd>
+                <?php echo $this->loglinfo['datetime']; ?>
+            </dd>
+        </dl>
+        <dl>
+            <dt style="width: 100px">OP：</dt>
+            <dd>
+                <?php echo $this->loglinfo['opname']; ?>
+            </dd>
+        </dl>
+        <dl>
+            <dt style="width: 100px">权限log：</dt>
+            <dd>
+                <?php
+                $list = explode('|', $this->loglinfo['log']);
+                if (isset($list[1])) {
+                    $alist = explode(',', $list[1]);
+                    echo implode("<br/>", $alist);
+                }
+                if (isset($list[0])) {
+                    if (isset($list[1])) {
+                       echo "<br/><br/>"; 
+                    }
+                    $alist = explode(',', $list[0]);
+                    echo implode("<br/>", $alist);
+                }
+                ?>
+            </dd>
+        </dl>
+        <div class="divider" style="border: 0px; margin-bottom: 20px"></div> 
+
+        <div class="divider" style="border: 0px; margin-bottom: 20px"></div>
+    </div>
+</form>
+</div>

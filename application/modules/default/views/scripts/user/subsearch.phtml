@@ -1,0 +1,69 @@
+<form id="pagerForm" action="/user/subsearch">
+    <input type="hidden" name="pageNum" value="1" />
+    <input type="hidden" name="numPerPage" value="<?=$this->userlist['numPerPage']?>" />
+    <input type="hidden" name="orderField" value="${param.orderField}" />
+    <input type="hidden" name="orderDirection" value="${param.orderDirection}" />
+</form>
+
+<div class="pageHeader">
+    <form rel="pagerForm" method="post" action="/user/subsearch" onsubmit="return dwzSearch(this, 'dialog');">
+        <div class="searchBar">
+            <ul class="searchContent">
+                <li>
+                    <label style="width:50px">user_id:</label>
+                    <input class="textInput" name="user_id" value="<?=$this->user_id?>" type="text">
+                </li>
+                <li>
+                    <label style="width:50px">姓名:</label>
+                    <input class="textInput" name="user_name" value="<?=$this->user_name?>" type="text">
+                </li>
+                <li style="width:50px">
+                    <div class="buttonActive"><div class="buttonContent"><button type="submit">查询</button></div></div>
+                </li>
+            </ul>
+            <div class="subBar">
+            </div>
+        </div>
+    </form>
+</div>
+<div class="pageContent">
+
+    <table class="table" layoutH="118" targetType="dialog" width="100%">
+        <thead>
+            <tr>
+                <th orderfield="user_id">用户id</th>
+                <th orderfield="user_name">用户名</th>
+                <th>姓名</th>
+                <th>邮箱</th>
+                <th width="80">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if(!empty($this->userlist['list'])): ?>
+            <?php foreach($this->userlist['list'] as $key=>$val): ?>
+            <tr>
+                <td><?php echo $this->escape($val['user_id']);?></td>
+                <td><?php echo $this->escape($val['user_name']);?></td>
+                <td><?php echo $this->escape($val['user_realname']);?></td>
+                <td><?php echo $this->escape($val['user_mail']);?></td>
+                <td>
+                    <a class="btnSelect" href="javascript:$.bringBack({user_id:'<?php echo $this->escape($val['user_id']);?>', user_realname:'<?php echo $this->escape($val['user_realname']);?>', email:'<?php echo $this->escape($val['user_mail']);?>'})" title="选择">选择</a>
+                </td>
+            </tr>
+            <?php endforeach;?>
+            <?php endif; ?>
+        </tbody>
+    </table>
+    <div class="panelBar">
+        <div class="pages">
+            <span>显示</span>
+            <select class="combox" name="numPerPage" onchange="dwzPageBreak({targetType: dialog, numPerPage: this.value})">
+                <option value="20" <?php if ($this->userlist['numPerPage'] == 20): ?>selected<?php endif; ?> >20</option>
+                <option value="50" <?php if ($this->userlist['numPerPage'] == 50): ?>selected<?php endif; ?>>50</option>
+                <option value="100" <?php if ($this->userlist['numPerPage'] == 100): ?>selected<?php endif; ?>>100</option>
+            </select>
+            <span>条，共<?=$this->userlist['totalCount']?>条</span>
+        </div>
+        <div class="pagination" targetType="dialog" totalCount="<?=$this->userlist['totalCount']?>" numPerPage="<?=$this->userlist['numPerPage']?>" pageNumShown="10" currentPage="<?=$this->userlist['currentPage']?>"></div>
+    </div>
+</div>

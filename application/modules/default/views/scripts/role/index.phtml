@@ -1,0 +1,73 @@
+<form id="pagerForm" method="post" action="/role">
+    <input type="hidden" name="role_name" value="" />
+    <input type="hidden" name="pageNum" value="1" />
+    <input type="hidden" name="numPerPage" value="<?=$this->rolelist['numPerPage']?>" />
+    <input type="hidden" name="orderField" value="" />
+</form>
+<div class="pageHeader">
+    <form onsubmit="return navTabSearch(this);"  action="/role" method="post">
+        <div class="searchBar">
+            <table class="searchContent">
+                <tr>
+                    <td>
+                       
+                    </td>
+                    <td>
+                       权限模板名称：<input type="text" name="role_name" value="<?=$this->role_name?>"/>
+                    </td>
+                    <td>
+                        <div class="buttonActive"><div class="buttonContent"><button type="submit">检索</button></div></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </form>
+</div>
+<div class="pageContent">
+    <div class="panelBar" >
+        <ul class="toolBar" style="float: right;">
+            <li><a class="add" href="/role/add" target="navTab" title="新建模板"><span>添加</span></a></li>
+            <li class="line">line</li>
+            <li><a class="edit" href="/role/update?role_id={sid_user}" target="navTab" title="编辑模板"><span>修改</span></a></li>
+            <li class="line">line</li>
+            <li><a class="delete" href="/role/del?role_id={sid_user}" target="ajaxTodo" title="确定要删除吗?"><span>删除</span></a></li>
+        </ul>
+    </div>
+    <table class="table" width="100%" layoutH="115">
+        <thead>
+            <tr>
+                <th width="80" align="center">RoleID</th>
+                <th width="120" align="center">模板名称</th>
+                <th align="center">模板说明</th>
+                <th width="100" align="center">是否有效</th>
+                <th width="200" align="center">更新时间</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if(!empty($this->rolelist['list'])): ?>
+            <?php foreach($this->rolelist['list'] as $key=>$val): ?>
+            <tr target="sid_user" rel="<?php echo $this->escape($val['role_id']);?>">
+                <td><?php echo $this->escape($val['role_id']);?></td>
+                <td><?php echo $this->escape($val['role_name']);?></td>
+                <td><?php echo $this->escape($val['role_intro']);?></td>
+                <td><?php if($val['enable']):?>有效<?php else:?>无效<?php endif;?></td>
+                <td><?php echo $this->escape($val['create_time']);?></td>
+            </tr>
+            <?php endforeach;?>
+            <?php endif; ?>
+
+        </tbody>
+    </table>
+    <div class="panelBar">
+        <div class="pages">
+            <span>显示</span>
+            <select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage: this.value})">
+                <option value="20" <?php if ($this->rolelist['numPerPage'] == 20): ?>selected<?php endif; ?> >20</option>
+                <option value="50" <?php if ($this->rolelist['numPerPage'] == 50): ?>selected<?php endif; ?>>50</option>
+                <option value="100" <?php if ($this->rolelist['numPerPage'] == 100): ?>selected<?php endif; ?>>100</option>
+            </select>
+            <span>条，共<?=$this->rolelist['totalCount']?>条</span>
+        </div>
+        <div class="pagination" targetType="navTab" totalCount="<?=$this->rolelist['totalCount']?>" numPerPage="<?=$this->rolelist['numPerPage']?>" pageNumShown="10" currentPage="<?=$this->rolelist['currentPage']?>"></div>
+    </div>
+</div>

@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>系统登录</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <link rel="shortcut icon" href="/favicon.ico">
+        <style type="text/css">
+            <!--
+            .alertMessage{border-bottom:#b11 1px solid;border-left:#b11 1px solid;padding-bottom:5px;margin:5px 0px;padding-left:25px;width:80%;padding-right:5px;display:block;background:url(/images/warn.gif)#fff no-repeat 5px 5px;color:#b11;clear:both;font-size:1em;border-top:#b11 1px solid;border-right:#b11 1px solid;padding-top:5px}.success{background-image:url('/images/check.gif');border-bottom:#4a4 1px solid;border-left:#4a4 1px solid;padding-bottom:5px;background-color:#fff;margin:5px 0px;padding-left:25px;width:80%;padding-right:5px;display:block;background-repeat:no-repeat;background-position:5px 5px;color:#000;clear:both;font-size:1em;border-top:#4a4 1px solid;border-right:#4a4 1px solid;padding-top:5px}.imgtype{background-image:url(/images/warn.gif);height:30px;width:120px;background-repeat:no-repeat;background-position:left-2px;padding-left:22px;margin-left:20px;margin-bottom:-15px}
+            -->
+        </style>
+        <script src="/js/jquery-1.7.2.js" type="text/javascript"></script>
+    </head>
+    <body>
+        <form id="loginfrm" method="post" name="loginfrm" action="/login.html">
+            <table border="0" cellspacing="0" cellpadding="0" width="900" align="center">
+                <tbody>
+                    <tr>
+                        <td style="height: 105px">
+                            <img border="0" src="/images/login_1.gif">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td height="300" background="/images/login_2.jpg">
+                            <table border="0" cellpadding="0" width="900" height="300">
+                                <tbody>
+                                    <tr>
+                                        <td height="35" colspan="2">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="330">
+                                        </td>
+                                        <td>
+                                            <table border="0" cellspacing="0" cellpadding="2">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="white-space: nowrap; height: 28px; color: #ffffff; font-size: 9pt; word-break: keep-all; border:1px #4a4 " width="60">
+                                                            登 录 名：
+                                                        </td>
+                                                        <td style="height: 28px" width="100">
+                                                            <input style="width:130px" id="username" name="username" required>
+                                                        </td>
+                                                        <td style="height: 28px" width="370">
+                                                            <span style="display: none;color:white;font-size: 13px; font-weight: bold;" id="required_username" class="imgtype"></span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="white-space: nowrap; height: 28px; color: #ffffff; font-size: 9pt; word-break: keep-all">
+                                                            登录密码：
+                                                        </td>
+                                                        <td style="height: 28px">
+                                                            <input style="width: 130px" id="password" type="password" name="password" required>
+                                                        </td>
+                                                        <td style="height: 28px">
+                                                            <span style="display: none;color:white;font-size: 13px; font-weight: bold" id="required_password" class="imgtype"></span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="height: 28px; color: #ffffff; font-size: 9pt">
+                                                            验证码：
+                                                        </td>
+                                                        <td style="white-space: nowrap; height: 28px; word-break: keep-all">
+                                                            <input style="width: 130px" id="code" type="text" name="code" maxlength="6" required>&nbsp;<img id="img_rand_code" title="点击刷新验证码" alt="验证码" style="margin-bottom: -10px;"/>&nbsp;<a style="color: #ffffff; font-size: 9pt" href="javascript:void(0);" id="RefreshImage">看不清楚？</a>
+                                                        </td>
+                                                        <td style="height: 28px">
+                                                            <span style="display: none;color:white;font-size: 13px; font-weight: bold" class="imgtype" id="required_code"></span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="height: 18px">
+                                                        </td>
+                                                        <td style="height: 18px">
+                                                        </td>
+                                                        <td style="height: 18px">
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                            <img style="cursor: default" id="ajaxlogin" name="subbtn" src="/images/login_button.gif"/>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <img border="0" src="/images/login_3.jpg"/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+        <script type="text/javascript">
+            $(function () {
+                $("#RefreshImage").click(function () {
+                    var timenow = new Date().getTime();
+                    $("#img_rand_code").attr("src", "/member/verifycode?d=" + timenow);
+                });
+                $("#img_rand_code").click(function () {
+                    var timenow = new Date().getTime();
+                    $("#img_rand_code").attr("src", "/member/verifycode?d=" + timenow);
+                });
+                $("#ajaxlogin").click(function () {
+                    var user = $("#username").val();
+                    var pwd = $("#password").val();
+                    var codev = $("#code").val();
+                    if (user === '') {
+                        $("#required_username")[0].style.display = "block";
+                        $("#required_username").html("请填写用户名");
+                        return false;
+                    } else {
+                        $("#required_username").html("");
+                        $("#required_username")[0].style.display = "none";
+                    }
+                    if (pwd === '') {
+                        $("#required_password").html("请填写密码");
+                        $("#required_password")[0].style.display = "block";
+                        return false;
+                    } else {
+                        $("#required_password").html("");
+                        $("#required_password")[0].style.display = "none";
+                    }
+                    if (codev === '') {
+                        $("#required_code").html("请填写验证码");
+                        $("#required_code")[0].style.display = "block";
+                        return false;
+                    } else {
+                        $("#required_code").html("");
+                        $("#required_code")[0].style.display = "none";
+                    }
+                    $.ajax({
+                        type: "POST",
+                        url: "/login.html",
+                        data: "username=" + user + "&password=" + pwd + "&code=" + codev,
+                        success: function (msg) {
+                            obj = eval('(' + msg + ')');
+                            if (obj.code == 1) {
+                                window.location.href = obj.url;
+                            } else if (obj.code == '-1') {
+                                $("#required_code").html("" + obj.message);
+                                $("#required_code")[0].style.display = "block";
+                            } else {
+                                $("#required_username").html("" + obj.message);
+                                $("#required_username")[0].style.display = "block";
+                            }
+                        }
+                    });
+                });
+
+                var timenow = new Date().getTime();
+                $("#img_rand_code").attr("src", "/member/verifycode?d=" + timenow);
+            });
+            function subPage() {
+                document.getElementById("loginfrm").submit();
+            }
+            window.document.onkeydown = function () {
+                if (event.keyCode == 13) {
+                    event.returnValue = false;
+                    event.cancel = true;
+                    document.getElementById("ajaxlogin").click();
+                    return false;
+                }
+            }
+
+        </script>
+    </body>
+</html>

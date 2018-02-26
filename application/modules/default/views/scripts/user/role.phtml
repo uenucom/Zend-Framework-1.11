@@ -1,0 +1,130 @@
+<?php if ($this->roleinfo['role_name'] !== 'admin'): ?>
+    <fieldset><legend>分配权限</legend>
+        <div class="divider" style="border: 0px;"></div>
+        <?php if (isset($this->acllist)): ?>
+            <?php foreach ($this->acllist as $key => $val): ?>
+                <!--<fieldset>-->
+                <label style="color:red"><?php if (trim($val['title']) !== ''): ?><?php echo $val['title']; ?><?php else: ?><?php echo $val['resource']; ?><?php endif; ?><input type="checkbox" name="resource[]" value="<?php echo $val['resource']; ?>" />：</label>
+                <?php if (isset($val['action'])): ?>
+                    <?php foreach ($val['action'] as $subkey => $subval): ?>
+                        <label><input type="checkbox" name="<?php echo $val['resource']; ?>[]" value="<?php echo $subval['action']; ?>" <?php if (in_array($val['resource'] . '_' . $subval['action'], $this->mlist)): ?>checked<?php endif; ?> /><?php
+                            if (trim($subval['title']) !== ''): echo $subval['title'];
+                            else: echo $subval['action'];
+                                ?><?php endif; ?></label>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+                <?php if ($key === (count($this->acllist) - 1)): ?>
+                    <div class="divider" style="border: 0px;"></div>
+                <?php else: ?>
+                    <div class="divider" style="margin:10px 0px ;"></div>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        <?php endif; ?></fieldset>
+
+    <script>
+        $(document).ready(function() {
+            $('input[type="checkbox"][name="resource[]"]').each(function() {
+                var pobj = this;
+                var resOur = $(this).val();
+                var cnt = 0;
+                $('input[type="checkbox"][name="' + resOur + '[]"]').each(function(i) {
+                    if ($(this).attr('checked')) {
+                        cnt = 1;
+                    }
+                });
+                if (cnt) {
+                    $(this).attr('disabled', false);
+                    $(this).attr('checked', true);
+                    $('input[type="checkbox"][name="' + resOur + '[]"]').each(function(i) {
+                        if ($(this).attr('checked')) {
+                            $(this).attr('disabled', false);
+                        }
+                        else {
+                            $(this).attr('disabled', false);
+                            $(this).attr('checked', false);
+                        }
+                    });
+                } else {
+                    $('input[type="checkbox"][name="' + resOur + '[]"]').each(function(i) {
+                        $(this).attr('disabled', true);
+                        $(this).attr('checked', false);
+                    });
+                }
+            });
+
+            //var action = new Array();
+            $('input[type="checkbox"][name="resource[]"]').click(function() {
+                //var resource = new Array();
+                var pobj = this;
+                var resOur = $(this).val();
+                $('input[type="checkbox"][name="' + resOur + '[]"]').each(function(i) {
+                    var obj = $(this).val();
+                    if ($(pobj).attr('checked')) {
+                        $(this).attr('disabled', false);
+                        $(this).attr('checked', true);//新增
+                    }
+                    else {
+                        $(this).attr('disabled', true);
+                        $(this).attr('checked', false);
+                    }
+                });
+            });
+
+            //
+            $('input[type="checkbox"][name="extlist[]"]').click(function() {
+                //var resource = new Array();
+                var pobj = this;
+                var cnt = 0;
+                $('input[type="checkbox"][name="extlist[]"]').each(function(i) {
+                    if ($(this).attr('checked')) {
+                        cnt++;
+                    }
+                });
+                if (cnt) {
+                    $("#extshow").get(0).style.display = "block";
+                    $("#extshow_line").get(0).style.display = "block";
+                    //exttype
+                    //$('input[name=exttype]').get(0).checked = true;
+                    //$("input[name=exttype]").attr("checked",true);
+                } else {
+                    $("#extshow").get(0).style.display = "none";
+                    $("#extshow_line").get(0).style.display = "none";
+                    $('input[name=exttype]').get(0).checked = true;
+                    // $("input[name=exttype]").attr("checked",true);
+                }
+            });
+
+            $('#checkAll').click(function() {
+                var nobj = this;
+                $('input[type="checkbox"][name="resource[]"]').each(function() {
+                    var resOur = $(this).val();
+                    if ($(nobj).attr('checked')) {
+                        $(this).attr('checked', true);
+                        $('input[type="checkbox"][name="' + resOur + '[]"]').attr('disabled', false);
+                        $('input[type="checkbox"][name="' + resOur + '[]"]').attr('checked', true);
+                    }
+                    else {
+                        $(this).attr('checked', false);
+                        $('input[type="checkbox"][name="' + resOur + '[]"]').attr('disabled', true);
+                        $('input[type="checkbox"][name="' + resOur + '[]"]').attr('checked', false);
+                    }
+                });
+
+            });
+            $("#role_name").val('<?php echo $this->roleinfo['role_name']; ?>');
+        });
+
+
+    </script>
+<?php else: ?>
+    <fieldset><legend>系统管理员</legend>
+        <div class="divider" style="border: 0px;"></div>
+        <p>&nbsp;&nbsp;&nbsp;该用户拥有最高权限</p>
+    </fieldset>
+
+    <script>
+        $(document).ready(function() {
+            $("#role_name").val('admin');
+        });
+    </script>
+<?php endif; ?>

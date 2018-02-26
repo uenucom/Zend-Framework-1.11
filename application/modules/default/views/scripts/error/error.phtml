@@ -1,0 +1,59 @@
+<div class="dk_pcbook_404 b1hui">
+    <div class="top_img">
+    </div>
+    <div class="content_404" style="height:25px;">
+        <?php echo $this->message;?>
+    </div>
+    <script>
+        function jumpurl()
+        {
+            window.location.href = "/";
+        }
+        //setTimeout("jumpurl()", 1800);
+    </script>
+    <div class="bac_to_in can-click collan tc f14" onclick="jumpurl()">返回主页</div>
+    <!--<div class="footer"></div>-->
+</div>
+<?php if (isset($this->exception)): ?>
+    <?php if ($this->showtype == 1): ?>
+        <fieldset><legend>&nbsp;&nbsp;<font style="font-family:georgia" color="red">Error!</font>&nbsp;&nbsp;</legend>
+            <font color = "green"><?php echo $this->message ?></font><br><br>
+            <?php echo $this->URL; ?><br><br>
+            <font color="green">Caught exception: <span id="errorSwitch" onclick="showError()" style="color: #000; font-size: 12px; cursor: pointer">展开</span><pre id="errorContent" style="display:none"><?php echo $this->exception->getTraceAsString() ?>
+            </pre></font>
+            <br />
+            <br />
+            <font color="green">Request Parameters:<br /><pre><?php echo $this->escape(var_export($this->request->getParams(), true)) ?>
+            </pre></font>
+            <font color="green">Message: <?php echo $this->exception->getMessage() ?></font><br/></fieldset>
+        <script>
+            function showError() {
+                var eobj = document.getElementById('errorSwitch');
+                var sobj = document.getElementById('errorContent');
+                if (sobj.style.display === "none") {
+                    eobj.innerHTML = "收起";
+                    sobj.style.display = "block";
+                } else {
+                    eobj.innerHTML = "展开";
+                    sobj.style.display = "none";
+                }
+            }
+
+        </script>
+        <br >
+    <?php else: ?>
+        <h2>An error occurred</h2>
+        <h3><?php echo $this->message ?></h3>
+        <h3>Exception information:</h3>
+        <p>
+            <b>Message:</b> <?php echo $this->exception->getMessage() ?>
+        </p>
+        <h3>Stack trace:</h3>
+        <pre><?php echo $this->exception->getTraceAsString() ?>
+        </pre>
+
+        <h3>Request Parameters:</h3>
+        <pre><?php echo $this->escape(var_export($this->request->getParams(), true)) ?>
+        </pre>
+    <?php endif; ?>
+<?php endif; ?>
