@@ -2,7 +2,7 @@ Zend Framework 1.11
 
 =======================
 
-基于Zend Framework 1.11  研发的多模块管理系统，适合大项目，每个模块独立开发、测试、上线，低耦合，不影响其他项目。
+基于Zend Framework 1.11  研发的多模块管理系统，适合大型项目，每个模块独立开发、测试、上线，低耦合，不影响其他项目。
 
 非常有创意的项目，试用复杂的大型项目。
 
@@ -26,7 +26,7 @@ Using Git submodules
 --------------------
 Alternatively, you can install using native git submodules:
 
-    git clone https://github.com/tianhuimin/Zend-Framework-1.11.git
+    git clone https://github.com/uenucom/Zend-Framework-1.11.git
 
 
 
@@ -67,14 +67,14 @@ project and you should be ready to go! It should look something like below:
 
 server {
   listen 80;
-  server_name  zfapp.localhost manage.uenu.com;
-  root /home/work/www/manage/public;
+  server_name  zfapp.localhost web.uenu.com;
+  root /home/web/www/public;
   location / {
         index index.php index.html index.htm;
         try_files $uri $uri/ /index.php?$args;
   }
-  access_log  /home/work/logs/default_access.log  main;
-  error_log  /home/work/logs/default_error.log  crit;
+  access_log  /home/web/logs/default_access.log  main;
+  error_log  /home/web/logs/default_error.log  crit;
   
 
   location ~ \.php$ {
